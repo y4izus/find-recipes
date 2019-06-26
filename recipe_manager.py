@@ -18,14 +18,14 @@ def _has(food):
 def _build_parser():
     parser = argparse.ArgumentParser(
         description='Get recipes information.')
-    
+
     # options
     parser.add_argument(
         '-has',
         action='store_true',
         help='indicates the foods that the recipes must contain')
     parser.add_argument('food')
-    
+
     return parser
 
 
