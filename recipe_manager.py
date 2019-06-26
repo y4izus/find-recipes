@@ -3,16 +3,23 @@
 import argparse
 from urllib.request import urlopen
 from bs4 import BeautifulSoup
+from urllib.parse import ParseResult, urlencode, urlunparse
 
 
 def get_recipes_for(food):
     get_recipes_for.description = f'search recipes with {food}'
-    url = f'https://www.recetario.es/encontrar?rec_all=0&search={food}'
-    html = urlopen(url)
+    query = {
+        'rec_all': '0',
+        'search': food
+    }
+    url_parsed = urlunparse(ParseResult(scheme='https', netloc='www.recetario.es', path='/encontrar',
+                                        params='', query=urlencode(query), fragment=''))
+
+    html = urlopen(url_parsed)
     soup = BeautifulSoup(html, 'lxml')
     recipes_links = soup.select('a[class="item-link item-title"]')
 
-    return recipes_links
+    return set(recipes_links)
 
 
 def _build_parser():
