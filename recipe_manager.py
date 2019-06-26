@@ -4,6 +4,7 @@ import argparse
 from urllib.request import urlopen
 from bs4 import BeautifulSoup
 from urllib.parse import ParseResult, urlencode, urlunparse
+from PyInquirer import prompt
 
 
 def get_recipes_for(food):
@@ -42,8 +43,22 @@ if __name__ == '__main__':
 
     if args.has:
         recipes = get_recipes_for(args.food)
+        recipes_formatted_to_console = []
 
         for recipe in recipes:
             recipe_title = recipe.text.capitalize()
             recipe_link = recipe.attrs['href']
-            print(f'{recipe_title} en https://www.recetario.es{recipe_link}')
+            recipes_formatted_to_console.append(
+                f'{recipe_title} -> https://www.recetario.es{recipe_link}')
+
+        questions = [
+            {
+                'type': 'list',
+                'message': 'Select a recipe',
+                'name': 'selected_recipe',
+                'choices': recipes_formatted_to_console
+            }
+        ]
+        answers = prompt(questions)
+        url_selected_recipe = answers['selected_recipe'].split('->')[1]
+        print(url_selected_recipe)
