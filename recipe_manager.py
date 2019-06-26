@@ -5,8 +5,8 @@ from urllib.request import urlopen
 from bs4 import BeautifulSoup
 
 
-def _has(food):
-    _has.description = 'search recipes with {}'.format(food)
+def get_recipes_for(food):
+    get_recipes_for.description = f'search recipes with {food}'
     url = f'https://www.recetario.es/encontrar?rec_all=0&search={food}'
     html = urlopen(url)
     soup = BeautifulSoup(html, 'lxml')
@@ -34,7 +34,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     if args.has:
-        recipes = _has(args.food)
+        recipes = get_recipes_for(args.food)
 
         for recipe in recipes:
             recipe_title = recipe.text.capitalize()
