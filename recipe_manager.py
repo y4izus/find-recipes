@@ -49,7 +49,10 @@ if __name__ == '__main__':
             recipe_title = recipe.text.capitalize()
             recipe_link = recipe.attrs['href']
             recipes_formatted_to_console.append(
-                f'{recipe_title} -> https://www.recetario.es{recipe_link}')
+                {
+                    'value': f'https://www.recetario.es{recipe_link}',
+                    'name': recipe_title
+                })
 
         questions = [
             {
@@ -60,5 +63,5 @@ if __name__ == '__main__':
             }
         ]
         answers = prompt(questions)
-        url_selected_recipe = answers['selected_recipe'].split('->')[1]
-        print(url_selected_recipe)
+        url_selected_recipe = answers['selected_recipe']
+        print(answers)
