@@ -7,9 +7,17 @@ from urllib.parse import ParseResult, urlencode, urlunparse
 from PyInquirer import prompt
 
 
-def create_url(path, query=''):
-    return urlunparse(ParseResult(scheme='https', netloc='www.recetario.es', path=path,
-                                  params='', query=urlencode(query), fragment=''))
+def _build_parser():
+    parser = argparse.ArgumentParser(
+        description='Get recipes information.')
+
+    # options
+    parser.add_argument(
+        '-has',
+        dest='food',
+        help='indicates the foods that the recipes must contain')
+
+    return parser
 
 
 def get_recipes_for(food):
@@ -30,31 +38,6 @@ def get_recipes_for(food):
     return set(recipes_links)
 
 
-def get_recipe_ingredients(recipe_link):
-    url = create_url(recipe_link)
-    print(recipe_link)
-    html = urlopen(url)
-    scraper = BeautifulSoup(html, 'lxml')
-    ingredients_scraped = scraper.select('li[itemprop="recipeIngredient"]')
-    ingredients_list = [ingredient.text.replace('\n', '').replace('\t', '').strip()
-                        for ingredient in ingredients_scraped]
-
-    print(ingredients_list)
-
-
-def _build_parser():
-    parser = argparse.ArgumentParser(
-        description='Get recipes information.')
-
-    # options
-    parser.add_argument(
-        '-has',
-        dest='food',
-        help='indicates the foods that the recipes must contain')
-
-    return parser
-
-
 def show_recipes_list_on_console(recipes_list):
     questions = [
         {
@@ -66,7 +49,6 @@ def show_recipes_list_on_console(recipes_list):
     ]
     answers = prompt(questions)
     url_selected_recipe = answers['selected_recipe']
-    get_recipe_ingredients(url_selected_recipe)
     # print(url_selected_recipe)
 
 
