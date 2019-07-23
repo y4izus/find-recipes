@@ -13,7 +13,7 @@ def _build_parser():
 
     # options
     parser.add_argument(
-        '-has',
+        '-with',
         dest='food',
         help='indicates the foods that the recipes must contain')
 
@@ -78,14 +78,12 @@ def show_recipe_instructions(url_selected_recipe):
     for recipe_step_tag in soup.select('div[class*="field-name-field-receta-modo-express"]'):
         print(recipe_step_tag.text)
 
-    # recipe['steps']
-
 
 def show_recipes_list_on_console(recipes_list):
     questions = [
         {
             'type': 'list',
-            'message': 'Select a recipe',
+            'message': 'Seleccione una receta: ',
             'name': 'selected_recipe',
             'choices': recipes_list
         }
@@ -105,7 +103,7 @@ def format_recipes_to_show_in_console(recipes):
         recipes_formatted_to_console.append(
             {
                 'value': recipe['url'],
-                'name': f"{recipe['title']}\nCalorías(Kcal): {recipe['kcal']}\nGrasas(g): {recipe['fats']}\nProteínas(g): {recipe['proteins']}\nHidratos de carbono(g): {recipe['carbohydrates']}\nFibra(g): {recipe['fiber']}"
+                'name': f"{recipe['title']}\nCalorías(Kcal): {recipe['kcal']}\nGrasas(g): {recipe['fats']}\nProteínas(g): {recipe['proteins']}\nHidratos de carbono(g): {recipe['carbohydrates']}\nFibra(g): {recipe['fiber']}\n"
             })
     return recipes_formatted_to_console
 
