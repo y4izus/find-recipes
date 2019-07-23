@@ -41,7 +41,6 @@ def get_recipes_info(recipes_tags):
         recipe['fiber'] = soup.find(
             "div", text="Fibra(g)").find_next_sibling("div").text
         recipes_info.append(recipe)
-        print(recipe)
 
     return recipes_info
 
@@ -64,6 +63,24 @@ def get_recipes_for(food):
     return set(recipes_tags)
 
 
+def show_recipe_instructions(url_selected_recipe):
+    url_parsed = urlunparse(ParseResult(scheme='http', netloc='www.chefplus.es', path=url_selected_recipe,
+                                        params='', query='', fragment=''))
+
+    html = urlopen(url_parsed)
+    soup = BeautifulSoup(html, 'lxml')
+
+    print('\n=== INGREDIENTES ===')
+    for recipe_ingredient_tag in soup.select('li[class="ingrediente"]'):
+        print(recipe_ingredient_tag.text.replace('\n', ' '))
+
+    print('\n=== PREPARACIÓN ===')
+    for recipe_step_tag in soup.select('div[class*="field-name-field-receta-modo-express"]'):
+        print(recipe_step_tag.text)
+
+    # recipe['steps']
+
+
 def show_recipes_list_on_console(recipes_list):
     questions = [
         {
@@ -75,6 +92,7 @@ def show_recipes_list_on_console(recipes_list):
     ]
     answers = prompt(questions)
     url_selected_recipe = answers['selected_recipe']
+    show_recipe_instructions(url_selected_recipe)
 
 
 def format_recipes_to_show_in_console(recipes):
