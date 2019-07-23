@@ -6,24 +6,17 @@ from recipe_manager import get_recipes_for
 class TestRecipeManagerMethods(unittest.TestCase):
 
     def test_get_recipes_for_food(self):
-        '''should show the first 12 recipe <a> links for berenjenas'''
+        '''should show the first 10 recipe <a> links for berenjenas'''
         food = 'berenjenas'
         recipes_anchors = get_recipes_for(food)
         recipes_anchors_bs4 = set(map(lambda a: BeautifulSoup(a).a, [
-            '<a class="item-link item-title" href="/verduras-y-hortalizas-recetas/berenjenas-rellenas/1t4dgkn5-885b2-476309-cfcd2-b65gwfkr">BERENJENAS RELLENAS</a>',
-            '<a class="item-link item-title" href="/verduras-y-hortalizas-recetas/berenjenas-ibericas/qfscdbe1-410a0-374809-cfcd2-quwvtebm">Berenjenas ibéricas.</a>',
-            '<a class="item-link item-title" href="/verduras-y-hortalizas-recetas/berenjenas-confitadas/7lq5l513-eddeb-290173-cfcd2-y0ab5c7b">BERENJENAS CONFITADAS</a>',
-            '<a class="item-link item-title" href="/verduras-y-hortalizas-recetas/berenjenas-rellenas/jt8njca4-731d0-725093-cfcd2-ypp6v0f8">Berenjenas Rellenas</a>',
-            '<a class="item-link item-title" href="/verduras-y-hortalizas-recetas/berenjenas-rellenas/lcg9y27p-25311-946237-88c8b-hhp34ycj">BERENJENAS RELLENAS</a>',
-            '<a class="item-link item-title" href="/verduras-y-hortalizas-recetas/berenjenas-estofadas/2x3jz8my-e4a93-514368-cfcd2-t05p5a0e">BERENJENAS ESTOFADAS</a>',
-            '<a class="item-link item-title" href="/verduras-y-hortalizas-recetas/berenjena-rellena/4glantqd-e3d11-451326-cfcd2-i1dmr9fu">Berenjena rellena</a>',
-            '<a class="item-link item-title" href="/verduras-y-hortalizas-recetas/berenjenas-rellenas/3gnkc93i-129e4-356941-cfcd2-f57ghumz">BERENJENAS RELLENAS </a>',
-            '<a class="item-link item-title" href="/verduras-y-hortalizas-recetas/berenjenas-rellenas/gxwiyssl-e449b-234109-cfcd2-z1wi29lv">Berenjenas rellenas</a>',
-            '<a class="item-link item-title" href="/verduras-y-hortalizas-recetas/simplemente-berenjenas/1knqn7dq-27302-305429-cfcd2-rb41hkae">SIMPLEMENTE BERENJENAS</a>',
-            '<a class="item-link item-title" href="/verduras-y-hortalizas-recetas/berenjenas-sencillas/vmn1gmci-6fad7-189053-cfcd2-1r4nqa4u">Berenjenas sencillas</a>',
-            '<a class="item-link item-title" href="/verduras-y-hortalizas-recetas/berenjenas-rellenas/iki514l6-e449b-129568-cfcd2-qkyy224q">Berenjenas rellenas</a>'
+          '<a href="/robot-cocina/recetas/verduras/berenjenas-la-crema-con-gambas-y-jamon">Berenjenas a la crema con gambas y jamón</a>', 
+          '<a href="/robot-cocina/recetas/verduras/berenjenas-rellenas">Berenjenas rellenas</a>', 
+          '<a href="/robot-cocina/recetas/verduras/berenjenas-rellenas-la-mallorquina">Berenjenas rellenas a la mallorquina</a>', 
+          '<a href="/robot-cocina/recetas/sopas-y-cremas/crema-de-berenjenas-y-puerro">Crema de berenjenas y puerro</a>', 
+          '<a href="/robot-cocina/recetas/pates/pate-de-berenjenas">Paté de berenjenas</a>', 
+          '<a href="/robot-cocina/recetas/huevos/tortilla-de-berenjenas">Tortilla de berenjenas</a>', 
         ]))
-        self.assertEqual(len(recipes_anchors), 12)
         self.assertEqual(recipes_anchors, recipes_anchors_bs4)
 
 

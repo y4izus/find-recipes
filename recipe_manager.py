@@ -18,16 +18,14 @@ def get_recipes_for(food):
     """
     get_recipes_for.description = f'search recipes with {food}'
     query = {
-        'rec_all': '0',
-        'search': food
+        'title': food
     }
-    # url_parsed = create_url('/encontrar', query)
-    url_parsed = urlunparse(ParseResult(scheme='https', netloc='www.recetario.es', path='/encontrar',
+    url_parsed = urlunparse(ParseResult(scheme='http', netloc='www.chefplus.es', path='/robot-cocina/recetas-resultados',
                                         params='', query=urlencode(query), fragment=''))
 
     html = urlopen(url_parsed)
     soup = BeautifulSoup(html, 'lxml')
-    recipes_links = soup.select('a[class="item-link item-title"]')
+    recipes_links = soup.select('p[class="tit"]>a')
 
     return set(recipes_links)
 
