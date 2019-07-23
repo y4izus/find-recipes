@@ -1,14 +1,14 @@
 import unittest
 from bs4 import BeautifulSoup
-from recipe_manager import get_recipes_for, get_recipes_info
+from recipe_manager import get_recipes_with, get_recipes_info
 
 
 class TestRecipeManagerMethods(unittest.TestCase):
 
-    def test_get_recipes_for_food(self):
+    def test_get_recipes_with_food(self):
         '''should show the first 10 recipe <a> links for berenjenas'''
         food = 'berenjenas'
-        recipes_anchors = get_recipes_for(food)
+        recipes_anchors = get_recipes_with(food)
         recipes_anchors_bs4 = set(map(lambda a: BeautifulSoup(a).a, [
             '<a href="/robot-cocina/recetas/verduras/berenjenas-la-crema-con-gambas-y-jamon">Berenjenas a la crema con gambas y jamón</a>',
             '<a href="/robot-cocina/recetas/verduras/berenjenas-rellenas">Berenjenas rellenas</a>',
