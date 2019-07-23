@@ -20,6 +20,31 @@ def _build_parser():
     return parser
 
 
+def get_recipes_info(recipes_tags):
+    recipes_info = []
+    for recipe_tag in recipes_tags:
+        recipe = {}
+        recipe['title'] = recipe_tag.text.capitalize()
+        recipe['url'] = recipe_tag.attrs['href']
+        url_parsed = urlunparse(ParseResult(scheme='http', netloc='www.chefplus.es', path=recipe['url'],
+                                            params='', query='', fragment=''))
+        html = urlopen(url_parsed)
+        soup = BeautifulSoup(html, 'lxml')
+        recipe['kcal'] = soup.find(
+            "div", text="Calorías(Kcal)").find_next_sibling("div").text
+        recipe['fats'] = soup.find(
+            "div", text="Grasas(g)").find_next_sibling("div").text
+        recipe['proteins'] = soup.find(
+            "div", text="Proteínas(g)").find_next_sibling("div").text
+        recipe['carbohydrates'] = soup.find(
+            "div", text="Hidratos de carbono(g)").find_next_sibling("div").text
+        recipe['fiber'] = soup.find(
+            "div", text="Fibra(g)").find_next_sibling("div").text
+        recipes_info.append(recipe)
+
+    return recipes_info
+
+
 def get_recipes_for(food):
     """
     Return the set of recipe links containing ``food`` by scrapping a certain web page.
@@ -33,9 +58,9 @@ def get_recipes_for(food):
 
     html = urlopen(url_parsed)
     soup = BeautifulSoup(html, 'lxml')
-    recipes_links = soup.select('p[class="tit"]>a')
+    recipes_tags = soup.select('p[class="tit"]>a')
 
-    return set(recipes_links)
+    return set(recipes_tags)
 
 
 def show_recipes_list_on_console(recipes_list):
@@ -49,7 +74,6 @@ def show_recipes_list_on_console(recipes_list):
     ]
     answers = prompt(questions)
     url_selected_recipe = answers['selected_recipe']
-    # print(url_selected_recipe)
 
 
 def format_recipes_to_show_in_console(recipes):
@@ -59,12 +83,10 @@ def format_recipes_to_show_in_console(recipes):
     recipes_formatted_to_console = []
 
     for recipe in recipes:
-        recipe_title = recipe.text.capitalize()
-        recipe_link = recipe.attrs['href']
         recipes_formatted_to_console.append(
             {
-                'value': recipe_link,
-                'name': recipe_title
+                'value': recipe['url'],
+                'name': f"{recipe['title']}\nCalorías(Kcal): {recipe['kcal']}\nGrasas(g): {recipe['fats']}\nProteínas(g): {recipe['proteins']}\nHidratos de carbono(g): {recipe['carbohydrates']}\nFibra(g): {recipe['fiber']}"
             })
     return recipes_formatted_to_console
 
@@ -74,7 +96,8 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     if args.food:
-        recipes = get_recipes_for(args.food)
+        recipes_tags = get_recipes_for(args.food)
+        recipes_infos = get_recipes_info(recipes_tags)
         recipes_formatted_to_console = format_recipes_to_show_in_console(
-            recipes)
+            recipes_infos)
         show_recipes_list_on_console(recipes_formatted_to_console)
