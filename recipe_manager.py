@@ -41,6 +41,7 @@ def get_recipes_info(recipes_tags):
         recipe['fiber'] = soup.find(
             "div", text="Fibra(g)").find_next_sibling("div").text
         recipes_info.append(recipe)
+        print(recipe)
 
     return recipes_info
 
