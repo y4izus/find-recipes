@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
 
 import argparse
+import asyncio
 from urllib.request import urlopen
 from bs4 import BeautifulSoup
 from urllib.parse import ParseResult, urlencode, urlunparse
 from PyInquirer import prompt
+from datetime import datetime
 
 
 def _build_parser():
@@ -28,26 +30,29 @@ def _get_soup_obj(path, query=''):
     return BeautifulSoup(html, 'lxml')
 
 
-def get_recipes_info(recipes_tags):
-    recipes_info = []
-    for recipe_tag in recipes_tags:
-        recipe = {}
-        recipe['title'] = recipe_tag.text.capitalize()
-        recipe['url'] = recipe_tag.attrs['href']
+def _get_recipe_info(recipe_tag):
+    recipe = {}
+    recipe['title'] = recipe_tag.text.capitalize()
+    recipe['url'] = recipe_tag.attrs['href']
 
-        soup = _get_soup_obj(recipe['url'])
-        recipe['kcal'] = soup.find(
-            "div", text="Calorías(Kcal)").find_next_sibling("div").text
-        recipe['fats'] = soup.find(
-            "div", text="Grasas(g)").find_next_sibling("div").text
-        recipe['proteins'] = soup.find(
-            "div", text="Proteínas(g)").find_next_sibling("div").text
-        recipe['carbohydrates'] = soup.find(
-            "div", text="Hidratos de carbono(g)").find_next_sibling("div").text
-        recipe['fiber'] = soup.find(
-            "div", text="Fibra(g)").find_next_sibling("div").text
+    soup = _get_soup_obj(recipe['url'])
+    recipe['kcal'] = soup.find(
+        "div", text="Calorías(Kcal)").find_next_sibling("div").text
+    recipe['fats'] = soup.find(
+        "div", text="Grasas(g)").find_next_sibling("div").text
+    recipe['proteins'] = soup.find(
+        "div", text="Proteínas(g)").find_next_sibling("div").text
+    recipe['carbohydrates'] = soup.find(
+        "div", text="Hidratos de carbono(g)").find_next_sibling("div").text
+    recipe['fiber'] = soup.find(
+        "div", text="Fibra(g)").find_next_sibling("div").text
+    return recipe
 
-        recipes_info.append(recipe)
+
+async def get_recipes_info(recipes_tags):
+    recipes_info_co_list = [_get_recipe_info(
+        recipe_tag) for recipe_tag in recipes_tags]
+    recipes_info = await asyncio.gather(*recipes_info_co_list)
 
     return recipes_info
 
@@ -98,12 +103,29 @@ def format_recipes_to_show_in_console(recipes):
     recipes_formatted_to_console = []
 
     for recipe in recipes:
+        text_to_show = f'{recipe["title"]}' \
+            f'\nCalorías(Kcal): {recipe["kcal"]}' \
+            f'\nGrasas(g): {recipe["fats"]}' \
+            f'\nProteínas(g): {recipe["proteins"]}' \
+            f'\nHidratos de carbono(g): {recipe["carbohydrates"]}' \
+            f'\nFibra(g): {recipe["fiber"]}\n'
+
         recipes_formatted_to_console.append(
             {
                 'value': recipe['url'],
-                'name': f"{recipe['title']}\nCalorías(Kcal): {recipe['kcal']}\nGrasas(g): {recipe['fats']}\nProteínas(g): {recipe['proteins']}\nHidratos de carbono(g): {recipe['carbohydrates']}\nFibra(g): {recipe['fiber']}\n"
+                'name': text_to_show
             })
     return recipes_formatted_to_console
+
+
+async def recipe_management(food):
+    recipes_tags = get_recipes_with(food)
+    start = datetime.now()
+    recipes_infos = await get_recipes_info(recipes_tags)
+    print('Elapsed time:', datetime.now() - start)
+    recipes_formatted_to_console = format_recipes_to_show_in_console(
+        recipes_infos)
+    show_recipes_list_on_console(recipes_formatted_to_console)
 
 
 if __name__ == '__main__':
@@ -111,8 +133,5 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     if args.food:
-        recipes_tags = get_recipes_with(args.food)
-        recipes_infos = get_recipes_info(recipes_tags)
-        recipes_formatted_to_console = format_recipes_to_show_in_console(
-            recipes_infos)
-        show_recipes_list_on_console(recipes_formatted_to_console)
+        loop = asyncio.get_event_loop()
+        loop.run_until_complete(recipe_management(args.food))
