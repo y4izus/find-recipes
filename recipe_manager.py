@@ -30,7 +30,7 @@ def _get_soup_obj(path, query=''):
     return BeautifulSoup(html, 'lxml')
 
 
-def _get_recipe_info(recipe_tag):
+async def _get_recipe_info(recipe_tag):
     recipe = {}
     recipe['title'] = recipe_tag.text.capitalize()
     recipe['url'] = recipe_tag.attrs['href']
@@ -46,12 +46,13 @@ def _get_recipe_info(recipe_tag):
         "div", text="Hidratos de carbono(g)").find_next_sibling("div").text
     recipe['fiber'] = soup.find(
         "div", text="Fibra(g)").find_next_sibling("div").text
+
     return recipe
 
 
 async def get_recipes_info(recipes_tags):
-    recipes_info_co_list = [_get_recipe_info(
-        recipe_tag) for recipe_tag in recipes_tags]
+    recipes_info_co_list = [(_get_recipe_info(
+        recipe_tag)) for recipe_tag in recipes_tags]
     recipes_info = await asyncio.gather(*recipes_info_co_list)
 
     return recipes_info
