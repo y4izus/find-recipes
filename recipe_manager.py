@@ -91,7 +91,7 @@ async def show_recipe_instructions(url_selected_recipe):
         print(recipe_step_tag.text)
 
 
-def show_recipes_list_on_console(recipes_list):
+async def show_recipes_list_on_console(recipes_list):
     questions = [
         {
             'type': 'list',
@@ -102,7 +102,7 @@ def show_recipes_list_on_console(recipes_list):
     ]
     answers = prompt(questions)
     url_selected_recipe = answers['selected_recipe']
-    show_recipe_instructions(url_selected_recipe)
+    await show_recipe_instructions(url_selected_recipe)
 
 
 def format_recipes_to_show_in_console(recipes):
@@ -134,7 +134,7 @@ async def recipe_management(food):
     print('Elapsed time:', datetime.now() - start)
     recipes_formatted_to_console = format_recipes_to_show_in_console(
         recipes_infos)
-    show_recipes_list_on_console(recipes_formatted_to_console)
+    await show_recipes_list_on_console(recipes_formatted_to_console)
 
 
 if __name__ == '__main__':
