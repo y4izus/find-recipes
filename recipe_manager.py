@@ -2,7 +2,7 @@
 
 import argparse
 import asyncio
-from urllib.request import urlopen
+import aiohttp
 from bs4 import BeautifulSoup
 from urllib.parse import ParseResult, urlencode, urlunparse
 from PyInquirer import prompt
@@ -22,11 +22,19 @@ def _build_parser():
     return parser
 
 
-def _get_soup_obj(path, query=''):
+async def fetch(session, url):
+    async with session.get(url) as response:
+        return await response.text()
+
+
+async def _get_soup_obj(path, query=''):
     '''Open a webpage with the indicated url and return its BeautifulSoup object'''
     url_parsed = urlunparse(ParseResult(scheme='http', netloc='www.chefplus.es', path=path,
                                         params='', query=query, fragment=''))
-    html = urlopen(url_parsed)
+
+    async with aiohttp.ClientSession() as session:
+        html = await fetch(session, url_parsed)
+
     return BeautifulSoup(html, 'lxml')
 
 
@@ -35,7 +43,7 @@ async def _get_recipe_info(recipe_tag):
     recipe['title'] = recipe_tag.text.capitalize()
     recipe['url'] = recipe_tag.attrs['href']
 
-    soup = _get_soup_obj(recipe['url'])
+    soup = await _get_soup_obj(recipe['url'])
     recipe['kcal'] = soup.find(
         "div", text="Calorías(Kcal)").find_next_sibling("div").text
     recipe['fats'] = soup.find(
@@ -58,21 +66,21 @@ async def get_recipes_info(recipes_tags):
     return recipes_info
 
 
-def get_recipes_with(food):
+async def get_recipes_with(food):
     """
     Return the set of recipe tags containing ``food`` by scrapping a certain web page.
     """
     query = {
         'title': food
     }
-    soup = _get_soup_obj('/robot-cocina/recetas-resultados', urlencode(query))
+    soup = await _get_soup_obj('/robot-cocina/recetas-resultados', urlencode(query))
     recipes_tags = soup.select('p[class="tit"]>a')
 
     return set(recipes_tags)
 
 
-def show_recipe_instructions(url_selected_recipe):
-    soup = _get_soup_obj(url_selected_recipe)
+async def show_recipe_instructions(url_selected_recipe):
+    soup = await _get_soup_obj(url_selected_recipe)
 
     print('\n=== INGREDIENTES ===')
     for recipe_ingredient_tag in soup.select('li[class="ingrediente"]'):
@@ -120,7 +128,7 @@ def format_recipes_to_show_in_console(recipes):
 
 
 async def recipe_management(food):
-    recipes_tags = get_recipes_with(food)
+    recipes_tags = await get_recipes_with(food)
     start = datetime.now()
     recipes_infos = await get_recipes_info(recipes_tags)
     print('Elapsed time:', datetime.now() - start)
