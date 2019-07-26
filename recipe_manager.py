@@ -5,6 +5,8 @@ from urllib.request import urlopen
 from bs4 import BeautifulSoup
 from urllib.parse import ParseResult, urlencode, urlunparse
 from PyInquirer import prompt
+from concurrent.futures import ThreadPoolExecutor, ProcessPoolExecutor
+from datetime import datetime
 
 
 def _build_parser():
@@ -28,26 +30,39 @@ def _get_soup_obj(path, query=''):
     return BeautifulSoup(html, 'lxml')
 
 
+def get_recipe_html(recipe_tag):
+    recipe_url = recipe_tag.attrs['href']
+
+    return _get_soup_obj(recipe_url)
+
+
+def get_recipe_info(recipe_html):
+    recipe = {}
+    print(recipe_html.select('head'))
+    recipe['title'] = recipe_html.select('h1')
+    recipe['kcal'] = recipe_html.find(
+        "div", text="Calorías(Kcal)").find_next_sibling("div").text
+    recipe['fats'] = recipe_html.find(
+        "div", text="Grasas(g)").find_next_sibling("div").text
+    recipe['proteins'] = recipe_html.find(
+        "div", text="Proteínas(g)").find_next_sibling("div").text
+    recipe['carbohydrates'] = recipe_html.find(
+        "div", text="Hidratos de carbono(g)").find_next_sibling("div").text
+    recipe['fiber'] = recipe_html.find(
+        "div", text="Fibra(g)").find_next_sibling("div").text
+    return recipe
+
+
 def get_recipes_info(recipes_tags):
+    recipes_html = []
     recipes_info = []
-    for recipe_tag in recipes_tags:
-        recipe = {}
-        recipe['title'] = recipe_tag.text.capitalize()
-        recipe['url'] = recipe_tag.attrs['href']
 
-        soup = _get_soup_obj(recipe['url'])
-        recipe['kcal'] = soup.find(
-            "div", text="Calorías(Kcal)").find_next_sibling("div").text
-        recipe['fats'] = soup.find(
-            "div", text="Grasas(g)").find_next_sibling("div").text
-        recipe['proteins'] = soup.find(
-            "div", text="Proteínas(g)").find_next_sibling("div").text
-        recipe['carbohydrates'] = soup.find(
-            "div", text="Hidratos de carbono(g)").find_next_sibling("div").text
-        recipe['fiber'] = soup.find(
-            "div", text="Fibra(g)").find_next_sibling("div").text
-
-        recipes_info.append(recipe)
+    start = datetime.now()
+    with ThreadPoolExecutor(max_workers=5) as executor:
+        recipes_html = executor.map(get_recipe_html, recipes_tags)
+    with ThreadPoolExecutor(max_workers=5) as executor:
+        recipes_info = executor.map(get_recipe_info, recipes_html)
+    print('Elapsed time:', datetime.now() - start)
 
     return recipes_info
 
