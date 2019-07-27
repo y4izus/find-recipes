@@ -14,8 +14,8 @@ def _build_parser():
     # options
     parser.add_argument(
         '-with',
-        dest='food',
-        help='indicates a food that the recipes must contain')
+        dest='ingredient',
+        help='indicates an ingredient that the recipes must contain')
 
     return parser
 
@@ -52,12 +52,12 @@ def get_recipes_info(recipes_tags):
     return recipes_info
 
 
-def get_recipes_with(food):
+def get_recipes_with(ingredient):
     """
-    Return the set of recipe tags containing ``food`` by scrapping a certain web page.
+    Return the set of recipe tags containing ``ingredient`` by scrapping a certain web page.
     """
     query = {
-        'title': food
+        'title': ingredient
     }
     soup = _get_soup_obj('/robot-cocina/recetas-resultados', urlencode(query))
     recipes_tags = soup.select('p[class="tit"]>a')
@@ -110,8 +110,8 @@ if __name__ == '__main__':
     parser = _build_parser()
     args = parser.parse_args()
 
-    if args.food:
-        recipes_tags = get_recipes_with(args.food)
+    if args.ingredient:
+        recipes_tags = get_recipes_with(args.ingredient)
         recipes_infos = get_recipes_info(recipes_tags)
         recipes_formatted_to_console = format_recipes_to_show_in_console(
             recipes_infos)
