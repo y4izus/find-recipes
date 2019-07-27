@@ -1,9 +1,9 @@
 import unittest
 from bs4 import BeautifulSoup
-from recipe_manager import get_recipes_with, get_recipes_info
+from find_recipes import get_recipes_with, get_recipes_info
 
 
-class TestRecipeManagerMethods(unittest.TestCase):
+class TestFindRecipesMethods(unittest.TestCase):
 
     def test_get_recipes_with_food(self):
         '''should show the first 10 recipe <a> links for berenjenas'''
