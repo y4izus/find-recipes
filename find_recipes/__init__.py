@@ -106,7 +106,7 @@ def format_recipes_to_show_in_console(recipes):
     return recipes_formatted_to_console
 
 
-if __name__ == '__main__':
+def main():
     parser = _build_parser()
     args = parser.parse_args()
 
@@ -116,3 +116,7 @@ if __name__ == '__main__':
         recipes_formatted_to_console = format_recipes_to_show_in_console(
             recipes_infos)
         show_recipes_list_on_console(recipes_formatted_to_console)
+
+
+if __name__ == '__main__':
+    main()
