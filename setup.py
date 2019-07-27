@@ -27,7 +27,7 @@ setuptools.setup(
     url='https://github.com/y4izus/find-recipes',
     author='Yaiza García',
     license='MIT',
-    classifiers=(
+    classifiers=[
         'Environment :: Console',
         'Development Status :: 3 - Alpha',
         'License :: OSI Approved :: MIT License',
@@ -37,11 +37,11 @@ setuptools.setup(
         'Intended Audience :: Healthcare Industry',
         'Operating System :: MacOS',
         'Programming Language :: Python :: 3.7'
-    ),
+    ],
     packages=setuptools.find_packages(exclude=['test*']),
     install_requires=requirements,
     python_requires='>=3.7',
-    extras_require={
-        'console_scripts': ['find-recipes=find-recipes.cli:main'],
+    entry_points={
+        'console_scripts': ['find-recipes=find_recipes:main'],
     }
 )
