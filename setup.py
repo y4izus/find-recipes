@@ -5,7 +5,7 @@ import os
 
 requirements = [
     'beautifulsoup4==4.7.1',
-    'lxml==4.3.3',
+    'lxml==4.6.5',
     'soupsieve==1.9.1',
     'PyInquirer==1.0.3'
 ]
